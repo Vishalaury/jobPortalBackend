@@ -20,10 +20,18 @@ app.use(cookieParser());
 //    credentials: true,
 
 // }
+// const corsOptions = {
+     
+//     origin: "https://job-portal-frontend-sable-chi.vercel.app",
+//     credentials: true,
+// }
 const corsOptions = {
-    origin: "https://job-portal-frontend-sable-chi.vercel.app",
-    credentials: true,
-}
+  origin: [
+    "http://localhost:5173",
+    "https://job-portal-frontend-sable-chi.vercel.app"
+  ],
+  credentials: true,
+};
 app.use(cors(corsOptions));
 
 const PORT  = process.env.PORT || 3000;
