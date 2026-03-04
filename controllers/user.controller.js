@@ -1099,7 +1099,6 @@
 
 
 
-
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -1120,6 +1119,7 @@ export const register = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
+
     if (user) {
       return res.status(400).json({
         message: "User already exist with this email.",
@@ -1132,7 +1132,9 @@ export const register = async (req, res) => {
     if (req.file) {
       const fileUri = getDataUri(req.file);
 
-      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+        resource_type: "image"
+      });
 
       profilePhotoUrl = cloudResponse.secure_url;
     }
@@ -1263,6 +1265,7 @@ export const logout = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
+
     const { fullname, email, phoneNumber, bio, skills } = req.body;
 
     const userId = req.id;
@@ -1276,42 +1279,40 @@ export const updateProfile = async (req, res) => {
       });
     }
 
+    /* -------- skills array -------- */
+
     let skillsArray;
 
     if (skills) {
       skillsArray = skills.split(",");
     }
 
-    /* ---------- RESUME UPLOAD ---------- */
+    /* -------- resume upload -------- */
 
-    /* ---------- RESUME UPLOAD ---------- */
+    let resumeUrl;
 
-let cloudResponse;
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
 
-if (req.file) {
-  const fileUri = getDataUri(req.file);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+        resource_type: "auto"
+      });
 
-  cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-    resource_type: "raw",
-    format: "pdf"
-  });
-}
+      resumeUrl = cloudResponse.secure_url;
+    }
 
-if (cloudResponse) {
-  user.profile.resume = cloudResponse.secure_url;
-  user.profile.resumeOriginalName = req.file.originalname;
-}
-
-    /* ---------- UPDATE DATA ---------- */
+    /* -------- update fields -------- */
 
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
-    if (bio) user.profile.bio = bio;
-    if (skills) user.profile.skills = skillsArray;
 
-    if (cloudResponse) {
-      user.profile.resume = cloudResponse.secure_url;
+    if (bio) user.profile.bio = bio;
+
+    if (skillsArray) user.profile.skills = skillsArray;
+
+    if (resumeUrl) {
+      user.profile.resume = resumeUrl;
       user.profile.resumeOriginalName = req.file.originalname;
     }
 
