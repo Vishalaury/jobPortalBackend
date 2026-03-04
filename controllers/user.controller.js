@@ -1284,15 +1284,23 @@ export const updateProfile = async (req, res) => {
 
     /* ---------- RESUME UPLOAD ---------- */
 
-    let cloudResponse;
+    /* ---------- RESUME UPLOAD ---------- */
 
-    if (req.file) {
-      const fileUri = getDataUri(req.file);
+let cloudResponse;
 
-      cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-        resource_type: "raw"
-      });
-    }
+if (req.file) {
+  const fileUri = getDataUri(req.file);
+
+  cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+    resource_type: "raw",
+    format: "pdf"
+  });
+}
+
+if (cloudResponse) {
+  user.profile.resume = cloudResponse.secure_url;
+  user.profile.resumeOriginalName = req.file.originalname;
+}
 
     /* ---------- UPDATE DATA ---------- */
 
