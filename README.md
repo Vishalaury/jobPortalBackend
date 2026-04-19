@@ -8,7 +8,7 @@ A full-stack job portal application built using the MERN stack (MongoDB, Express
 
 * Frontend: http://job-portal-frontend-sable-chi.vercel.app
 * Backend API: https://jobportalbackend-0e4n.onrender.com
-* frontend Repo: 
+* frontend Repo: https://github.com/Vishalaury/jobPortalFrontend
 ---
 
 ## ⚙️ Tech Stack
